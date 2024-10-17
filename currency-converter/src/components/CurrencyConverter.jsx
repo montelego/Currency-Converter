@@ -8,7 +8,7 @@ const CurrencyConverter = () => {
   const [amount, setAmount] = useState(1);
 
   const [fromCurrency, setFromCurrency] = useState("USD");
-  const [toCurrency, settoCurrency] = useState("ZAR");
+  const [toCurrency, setToCurrency] = useState("ZAR");
   const [convertedAmount, setConvertedAmount] = useState(null);
   const [converting, setConverting] = useState(false);
   const [favorites, setfavorites] = useState(
@@ -93,7 +93,7 @@ const CurrencyConverter = () => {
         </div>
 
         {/* importing DropDown file  */}
-        <DropDown />
+        {/* <DropDown /> */}
 
         <CurrencyDropdown
           favorites={favorites}

@@ -26,15 +26,6 @@ const CurrencyDropdown = ({
           onChange={(e) => setCurrency(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          {/* render favorites */}
-          {favorites.map((currencies) => {
-            return (
-              <option className="bg-gray-200" value={currency} key={currency}>
-                {currency}
-              </option>
-            );
-          })}
-          <hr />
           {currencies?.map((currency) => {
             // currency.map is not a function
             return (
@@ -44,15 +35,6 @@ const CurrencyDropdown = ({
             );
           })}
         </select>
-
-        <button
-          onClick={() => handleFavorite(currency)}
-          className="absolute insert-y-0 pr-5 flex iterms-center text-sm leading-5"
-        >
-          {/* {isFavorite(currency)?
-          } */}
-          <FaRegStar /> {/*STAR ICON (FaRegstar) FROM react-icons */}
-        </button>
       </div>
     </div>
   );
