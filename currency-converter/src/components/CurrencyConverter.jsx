@@ -6,26 +6,21 @@ import { HiArrowsRightLeft } from "react-icons/hi2";
 const CurrencyConverter = () => {
   const [currencies, setCurrencies] = useState([]);
   const [amount, setAmount] = useState(1);
-
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("ZAR");
   const [convertedAmount, setConvertedAmount] = useState(null);
   const [converting, setConverting] = useState(false);
-  const [favorites, setfavorites] = useState(
+  const [favorites, setFavorites] = useState(
     JSON.parse(localStorage.getItem("favorites")) || ["ZAR"]
   );
-
-  // "api.frankfurter.app/currencies"
-  //Currencies -> https://api.frankfurter.app/currencies
 
   const fetchCurrencies = async () => {
     try {
       const res = await fetch("https://api.frankfurter.app/currencies");
       const data = await res.json();
-
       setCurrencies(Object.keys(data));
     } catch (error) {
-      console.error("Error Fetching", error);
+      console.error("Error fetching currencies:", error);
     }
   };
 
@@ -33,30 +28,38 @@ const CurrencyConverter = () => {
     fetchCurrencies();
   }, []);
 
-  console.log(currencies);
-
-  // Conversion -> https:api.frankfurter.app/latest?amount=1&from=USD$to=ZAR
   const convertCurrency = async () => {
-    if (!amount) return;
+    if (!amount || amount <= 0) {
+      alert("Please enter a valid amount.");
+      return;
+    }
     setConverting(true);
 
-    // Conversion Logic
     try {
       const res = await fetch(
-        `https:api.frankfurter.app/latest?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`
+        `https://api.frankfurter.app/latest?amount=${amount}&from=${fromCurrency}&to=${toCurrency}`
       );
       const data = await res.json();
 
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       setConvertedAmount(data.rates[toCurrency] + " " + toCurrency);
     } catch (error) {
-      console.error("Error Fetching", error);
+      console.error("Error fetching conversion data:", error);
+      alert("Error fetching conversion data. Please try again.");
     } finally {
       setConverting(false);
     }
   };
 
   const handleFavorite = (currency) => {
-    // add to fav
+    if (!favorites.includes(currency)) {
+      const updatedFavorites = [...favorites, currency];
+      setFavorites(updatedFavorites);
+      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    }
   };
 
   const swapCurrencies = () => {
@@ -65,7 +68,6 @@ const CurrencyConverter = () => {
   };
 
   return (
-    // A BOX STYLE AROUND A CURRENCY CONVERTER
     <div className="max-w-xl mx-auto my-10 p-5 bg-white rounded-lg shadow-md">
       <h2 className="mb-5 text-2xl font-semibold text-gray-700">
         Currency Converter
@@ -81,19 +83,14 @@ const CurrencyConverter = () => {
           handleFavorite={handleFavorite}
         />
 
-        {/* swap currency button */}
         <div className="flex justify-center -mb-5 sm:mb-0">
           <button
             onClick={swapCurrencies}
             className="p-2 bg-gray-200 rounded-full cursor-pointer hover:bg-gray-300"
           >
-            {/*  the swap HiArrowsRightLeft icon from react-icons */}
             <HiArrowsRightLeft className="text-xl text-gray-700" />
           </button>
         </div>
-
-        {/* importing DropDown file  */}
-        {/* <DropDown /> */}
 
         <CurrencyDropdown
           favorites={favorites}
@@ -105,7 +102,6 @@ const CurrencyConverter = () => {
         />
       </div>
 
-      {/* STYLING AMOUNT TEXT */}
       <div className="mt-4">
         <label
           htmlFor="amount"
@@ -113,21 +109,18 @@ const CurrencyConverter = () => {
         >
           Amount:
         </label>
-
-        {/* STYYLING THE BORDER INPUT FOR THE AMOUNT */}
         <input
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           type="number"
-          className="w-full p-2 border border-gray-300 rounded-md shadow-sm focu:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
 
-      {/* STYLE FOR THE CONVERT BUTTON.*/}
       <div className="flex justify-end mt-6">
         <button
           onClick={convertCurrency}
-          className={`px-5 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focu:outline-none focus:ring-2
+          className={`px-5 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2
              focus:ring-indigo-500 focus:ring-offset-2
              ${converting ? "animate-pulse" : ""}`}
         >
@@ -140,6 +133,7 @@ const CurrencyConverter = () => {
           Converted Amount: {convertedAmount}
         </div>
       )}
+   
     </div>
   );
 };
